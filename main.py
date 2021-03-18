@@ -8,9 +8,17 @@
 
 import csv
 
+# import sys
+# import linecache
+
+# def failure(e):
+#     exc_type, exc_obj, tb=sys.exc_info()
+#     lineno=tb.tb_lineno
+#     print(str(lineno) + ":" + str(type(e)))
+
 f = open('waseda_zemi_syllabus.csv', 'a')
 writer = csv.writer(f)
-writer.writerow(["科目名", "副題", "事前・事後学習の内容", "授業概要", "備考・関連URL"])
+writer.writerow(["科目名", "副題", "事前・事後学習の内容", "備考・関連URL", "授業概要"])
 f.close()
 
 import urllib.request, urllib.error
@@ -54,25 +62,25 @@ while (end != True):
             base_info = tbody[1]
             det_info  = tbody[2].text.split("\n")
 
-            course_title = base_info.text.split("\n")[6]                        # 科目名
+            course_title = base_info.text.split("\n")[6]                                 # 科目名
 
             print("科目名:" + course_title)
 
-            csv_list[0] = course_title
+            csv_list[0] = course_title.replace('\xa0', '')
 
             for info in det_info:
 
                 if (flag == True):
-                    print(tag + ":" + info + "\n")
+                    # print(tag + ":" + info + "\n")
 
                     if (tag == "副題"):
-                        csv_list[1] = info
+                        csv_list[1] = info.replace('\xa0', '')
                     elif (tag == "事前・事後学習の内容"):
-                        csv_list[2] = info
-                    elif (tag == "授業概要"):
-                        csv_list[3] = info
+                        csv_list[2] = info.replace('\xa0', '')
                     elif (tag == "備考・関連URL"):
-                        csv_list[4] = info
+                        csv_list[3] = info.replace('\xa0', '')
+                    elif (tag == "授業概要"):
+                        csv_list[4] = info.replace('\xa0', '')
 
                 if (info == "副題" or info == "事前・事後学習の内容" or
                     info == "授業概要" or info == "備考・関連URL"):
@@ -83,8 +91,12 @@ while (end != True):
 
             writer.writerow(csv_list)
 
-        except:
-            pass
+        except Exception as e:
+            print(key + " except")
+            print('type:' + str(type(e)))
+            # failure(e)
+
+            # pass
 
         if (key == "500Q108"):
             end = True
